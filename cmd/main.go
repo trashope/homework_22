@@ -26,7 +26,9 @@ func main() {
 		fmt.Println("2. Delete Event")
 		fmt.Println("3. Modify Event")
 		fmt.Println("4. List Events")
-		fmt.Println("5. Exit")
+		fmt.Println("5. Search Events by Title")
+		fmt.Println("6. Exit")
+
 		fmt.Print("Enter your choice: ")
 
 		scanner.Scan()
@@ -42,12 +44,15 @@ func main() {
 		case "4":
 			events.ListEvents(users)
 		case "5":
+			searchEventsCLI(users, scanner)
+		case "6":
 			fmt.Println("Exiting...")
 			err := storage.SaveEvents(users)
 			if err != nil {
 				fmt.Printf("Error saving events: %v\n", err)
 			}
 			return
+
 		default:
 			fmt.Println("Invalid choice, please enter a number between 1 and 5.")
 		}
@@ -150,6 +155,22 @@ func findEventByID(users []model.User, userName, eventID string) (model.Event, b
 		}
 	}
 	return existingEvent, found
+}
+
+func searchEventsCLI(users []model.User, scanner *bufio.Scanner) {
+	fmt.Print("Enter event title to search: ")
+	scanner.Scan()
+	title := scanner.Text()
+
+	foundEvents := events.SearchEventsByTitle(users, title)
+	if len(foundEvents) == 0 {
+		fmt.Println("No events found with that title.")
+	} else {
+		fmt.Println("Found Events:")
+		for _, event := range foundEvents {
+			fmt.Printf("ID: %s, Title: %s, Date: %s\n", event.EventID, event.Title, event.Date.Format("2006-01-02"))
+		}
+	}
 }
 
 func modifyEventDetails(scanner *bufio.Scanner, event *model.Event) {

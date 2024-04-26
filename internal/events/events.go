@@ -3,6 +3,7 @@ package events
 import (
 	"event-management-system/model"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,6 +52,18 @@ func DeleteEvent(users []model.User, userName, eventID string) ([]model.User, er
 		}
 	}
 	return users, fmt.Errorf("event not found")
+}
+
+func SearchEventsByTitle(users []model.User, title string) []model.Event {
+	var foundEvents []model.Event
+	for _, user := range users {
+		for _, event := range user.Events {
+			if strings.Contains(strings.ToLower(event.Title), strings.ToLower(title)) {
+				foundEvents = append(foundEvents, event)
+			}
+		}
+	}
+	return foundEvents
 }
 
 func ModifyEvent(users []model.User, userName, eventID string, newEvent model.Event) ([]model.User, error) {
